@@ -100,7 +100,6 @@ use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::ops::{Deref, DerefMut};
 
-use self::hash::BuildHashU64;
 use crate::{HConsed, HashConsed};
 
 /// A hash set of hash-consed things with trivial hashing.
@@ -110,7 +109,7 @@ where
     T: HashConsed,
     T::Inner: Eq + Hash,
 {
-    set: HashSet<HConsed<T::Inner>, BuildHashU64>,
+    set: HashSet<HConsed<T::Inner>>,
 }
 impl<T> PartialEq for HConSet<T>
 where
@@ -157,14 +156,14 @@ where
     #[inline]
     pub fn new() -> Self {
         HConSet {
-            set: HashSet::with_hasher(BuildHashU64 {}),
+            set: HashSet::new(),
         }
     }
     /// An empty set of hashconsed things with a capacity.
     #[inline]
     pub fn with_capacity(capa: usize) -> Self {
         HConSet {
-            set: HashSet::with_capacity_and_hasher(capa, BuildHashU64 {}),
+            set: HashSet::with_capacity(capa),
         }
     }
     /// An iterator visiting all elements.
@@ -211,7 +210,7 @@ where
     T: HashConsed,
     T::Inner: Hash + Eq,
 {
-    type Target = HashSet<HConsed<T::Inner>, BuildHashU64>;
+    type Target = HashSet<HConsed<T::Inner>>;
     fn deref(&self) -> &Self::Target {
         &self.set
     }
@@ -247,7 +246,7 @@ where
     T: HashConsed,
     T::Inner: Hash + Eq,
 {
-    map: HashMap<HConsed<T::Inner>, V, BuildHashU64>,
+    map: HashMap<HConsed<T::Inner>, V>,
 }
 
 impl<T, V> PartialEq for HConMap<T, V>
@@ -301,14 +300,14 @@ where
     #[inline]
     pub fn new() -> Self {
         HConMap {
-            map: HashMap::with_hasher(BuildHashU64 {}),
+            map: HashMap::new(),
         }
     }
     /// An empty map of hashconsed things with a capacity.
     #[inline]
     pub fn with_capacity(capa: usize) -> Self {
         HConMap {
-            map: HashMap::with_capacity_and_hasher(capa, BuildHashU64 {}),
+            map: HashMap::with_capacity(capa),
         }
     }
     /// An iterator visiting all elements.
@@ -370,7 +369,7 @@ impl<T: HashConsed, V> Deref for HConMap<T, V>
 where
     T::Inner: Hash + Eq,
 {
-    type Target = HashMap<HConsed<T::Inner>, V, BuildHashU64>;
+    type Target = HashMap<HConsed<T::Inner>, V>;
     fn deref(&self) -> &Self::Target {
         &self.map
     }
@@ -395,69 +394,5 @@ where
             set.insert(elem, value);
         }
         set
-    }
-}
-
-/// Optimal trivial hash for `usize`s and `u64`s. The former is used for
-/// wrapped indices, the latter for hashconsed things.
-///
-/// **NEVER USE THIS MODULE DIRECTLY. ONLY THROUGH THE `wrap_usize` MACRO.**
-///
-/// This is kind of unsafe, in a way. The hasher will cause logic errors if
-/// asked to hash anything else than what it was supposed to hash.
-///
-/// In `debug`, this is actually checked each time something is hashed. This
-/// check is of course deactivated in `release`.
-mod hash {
-    use std::hash::{BuildHasher, Hasher};
-
-    /// Empty struct used to build `HashU64`.
-    #[derive(Clone)]
-    pub struct BuildHashU64 {}
-    impl BuildHasher for BuildHashU64 {
-        type Hasher = HashU64;
-        fn build_hasher(&self) -> HashU64 {
-            HashU64 { buf: [0; 8] }
-        }
-    }
-    impl Default for BuildHashU64 {
-        fn default() -> Self {
-            BuildHashU64 {}
-        }
-    }
-
-    /// Trivial hasher for `usize`. **This hasher is only for hashing `usize`s**.
-    pub struct HashU64 {
-        buf: [u8; 8],
-    }
-    impl HashU64 {
-        /// Checks that a slice of bytes has the length of a `usize`. Only active
-        /// in debug.
-        #[cfg(debug)]
-        #[inline(always)]
-        fn test_bytes(bytes: &[u8]) {
-            if bytes.len() != 8 {
-                panic!(
-                    "[illegal] `HashU64::hash` \
-                     called with non-`u64` argument ({} bytes, expected {})",
-                    bytes.len(),
-                    8
-                )
-            }
-        }
-        /// Checks that a slice of bytes has the length of a `usize`. Only active
-        /// in debug.
-        #[cfg(not(debug))]
-        #[inline(always)]
-        fn test_bytes(_: &[u8]) {}
-    }
-    impl Hasher for HashU64 {
-        fn finish(&self) -> u64 {
-            unsafe { ::std::mem::transmute(self.buf) }
-        }
-        fn write(&mut self, bytes: &[u8]) {
-            Self::test_bytes(bytes);
-            self.buf[..8].clone_from_slice(&bytes[..8])
-        }
     }
 }
