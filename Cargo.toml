@@ -18,6 +18,7 @@ appveyor = { repository = "AdrienChampion/hashconsing" }
 codecov = { repository = "AdrienChampion/hashconsing", service = "github" }
 
 [dependencies]
+ahash = "0.7"
 lazy_static = "1.*"
 
 [dev-dependencies]

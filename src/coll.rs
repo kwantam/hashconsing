@@ -96,7 +96,8 @@
 //! assert!( is_new ) ;
 //! ```
 
-use std::collections::{HashMap, HashSet};
+//use std::collections::{HashMap, HashSet};
+use ahash::{AHashMap as HashMap, AHashSet as HashSet};
 use std::hash::{Hash, Hasher};
 use std::ops::{Deref, DerefMut};
 
