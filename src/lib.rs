@@ -270,9 +270,9 @@ pub trait HashConsed {
 /// A hashconsed value.
 pub struct HConsed<T> {
     /// The actual element.
-    elm: Arc<T>,
+    pub elm: Arc<T>,
     /// Unique identifier of the element.
-    uid: u64,
+    pub uid: u64,
 }
 impl<T> HashConsed for HConsed<T> {
     type Inner = T;
@@ -366,9 +366,9 @@ impl<T: fmt::Display> fmt::Display for HConsed<T> {
 /// Weak version of `HConsed` (internal).
 pub struct WHConsed<T> {
     /// The actual element.
-    elm: Weak<T>,
+    pub elm: Weak<T>,
     /// Unique identifier of the element.
-    uid: u64,
+    pub uid: u64,
 }
 impl<T> WHConsed<T> {
     /// Turns a weak hashconsed thing in a hashconsed thing.
