@@ -141,7 +141,7 @@ use std::{
 
 pub mod hashers;
 
-/// Hash sets (maps) for (from) hconsed elements using [`ahash`].
+/// Hash sets (maps) for (from) hconsed elements using [`ahash`][ahash].
 ///
 /// > **NB:** this module is empty if the `"with_ahash"` feature is not active.
 ///
