@@ -428,9 +428,9 @@ impl<T> Ord for WHConsed<T> {
 /// The consign storing the actual hash consed elements as `HConsed`s.
 pub struct HConsign<T: Hash + Eq + Clone> {
     /// The actual hash consing table.
-    table: HashMap<T, WHConsed<T>>,
+    pub table: HashMap<T, WHConsed<T>>,
     /// Counter for uids.
-    count: u64,
+    pub count: u64,
 }
 
 impl<T: Hash + Eq + Clone> HConsign<T> {
