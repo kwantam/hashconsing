@@ -412,7 +412,7 @@ mod hash {
     use std::hash::{BuildHasher, Hasher};
 
     /// Empty struct used to build `HashU64`.
-    #[derive(Clone)]
+    #[derive(Debug,Clone)]
     pub struct BuildHashU64 {}
     impl BuildHasher for BuildHashU64 {
         type Hasher = HashU64;
