@@ -181,7 +181,7 @@ where
     type Item = &'a HConsed<T::Inner>;
     type IntoIter = ::std::collections::hash_set::Iter<'a, HConsed<T::Inner>>;
     fn into_iter(self) -> Self::IntoIter {
-        (&self.set).into_iter()
+        self.set.iter()
     }
 }
 impl<T> IntoIterator for HConSet<T>
@@ -330,7 +330,7 @@ where
     type Item = (&'a HConsed<T::Inner>, &'a V);
     type IntoIter = ::std::collections::hash_map::Iter<'a, HConsed<T::Inner>, V>;
     fn into_iter(self) -> Self::IntoIter {
-        (&self.map).into_iter()
+        self.map.iter()
     }
 }
 impl<'a, T, V> IntoIterator for &'a mut HConMap<T, V>
@@ -341,7 +341,7 @@ where
     type Item = (&'a HConsed<T::Inner>, &'a mut V);
     type IntoIter = ::std::collections::hash_map::IterMut<'a, HConsed<T::Inner>, V>;
     fn into_iter(self) -> Self::IntoIter {
-        (&mut self.map).into_iter()
+        self.map.iter_mut()
     }
 }
 impl<T, V> IntoIterator for HConMap<T, V>
@@ -412,17 +412,12 @@ mod hash {
     use std::hash::{BuildHasher, Hasher};
 
     /// Empty struct used to build `HashU64`.
-    #[derive(Debug,Clone)]
+    #[derive(Default,Debug,Clone)]
     pub struct BuildHashU64 {}
     impl BuildHasher for BuildHashU64 {
         type Hasher = HashU64;
         fn build_hasher(&self) -> HashU64 {
             HashU64 { buf: [0; 8] }
-        }
-    }
-    impl Default for BuildHashU64 {
-        fn default() -> Self {
-            BuildHashU64 {}
         }
     }
 
